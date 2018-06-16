@@ -4,18 +4,35 @@ const quiz = [
     ["gato","cat"]
 ];
 
-let score = 0;
+function play(quiz) {
+	let score = 0;
 
-for (const [question, answer] of quiz) {
-	const response = prompt(question);
-	if (response === answer) {
-		alert("Correct!");
-		score++;
-	} else {
-		alert(`Wrong! The correct answer was ${answer}`);
+	// main game loop
+	for (const [question, answer] of quiz) {
+		const response = ask(question);
+		check(response, answer);
+	}
+	// end of main game loop
+
+	gameOver();
+
+	// function declarations
+	function ask(question) {
+		return prompt(question);
+	}
+
+	function check(response, answer) {
+		if (response === answer) {
+			alert("Correct!");
+			score++;
+		} else {
+			alert(`Wrong! The correct answer was ${answer}`);
+		}
+	}
+
+	function gameOver() {
+		alert(`Quiz Over, you scored ${score} point${score !== 1 ? 's' : ''}`);
 	}
 }
 
-alert(`Quiz Over, you scored ${score} point${score !== 1 ? 's' : ''}`);
-
-// TODO: chapter 4
+play(quiz);
