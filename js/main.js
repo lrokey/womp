@@ -1,38 +1,42 @@
 const quiz = [
-    ["airport","aeropuerto"],
-    ["interesting","interesante"],
-    ["gato","cat"]
+	{english: "airport", spanish: "aeropuerto"},
+	{english: "interesting", spanish: "interesante"},
+	{english: "cat", spanish: "gato"}
 ];
 
-function play(quiz) {
-	let score = 0;
+const game = {
+	start(quiz) {
+		this.questions = [...quiz];
+		this.score = 0;
 
-	// main game loop
-	for (const [question, answer] of quiz) {
-		const response = ask(question);
-		check(response, answer);
-	}
-	// end of main game loop
+		// main game loop
+		for (const question of this.questions) {
+			this.question = question;
+			this.ask();
+		}
 
-	gameOver();
+		// end of main game loop
+		this.gameOver();
+	},
 
-	// function declarations
-	function ask(question) {
-		return prompt(question);
-	}
+	ask() {
+		const question = `What is ${this.question.english} in Spanish?`;
+		const response = prompt(question);
+		this.check(response);
+	},
 
-	function check(response, answer) {
+	check(response) {
+		const answer = this.question.spanish
 		if (response === answer) {
 			alert("Correct!");
-			score++;
+			this.score++;
 		} else {
 			alert(`Wrong! The correct answer was ${answer}`);
 		}
-	}
+	},
 
-	function gameOver() {
-		alert(`Quiz Over, you scored ${score} point${score !== 1 ? 's' : ''}`);
+	gameOver() {
+		alert(`Quiz Over, you scored ${this.score} point${this.score !== 1 ? 's' : ''}`);
 	}
 }
-
-play(quiz);
+game.start(quiz);
