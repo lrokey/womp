@@ -8,6 +8,7 @@ const quiz = [
 const view = {
 	score: document.querySelector("#score strong"),
 	question: document.getElementById("question"),
+	response: document.querySelector("#response"),
 	result: document.getElementById("result"),
 	info: document.getElementById("info"),
 	start: document.getElementById("start"),
@@ -22,48 +23,68 @@ const view = {
 	},
 	hide(element) {
 		element.style.display = "none";
+	},
+	setup(){
+		this.show(this.question);
+		this.show(this.response);
+		this.show(this.result);
+		this.hide(this.start);
+		this.render(this.score, game.score);
+		this.render(this.result, "");
+		this.render(this.info, "");
+		this.resetForm();
+	},
+	resetForm(){
+		this.response.answer.value = "";
+		this.response.answer.focus();
+	},
+	teardown(){
+		this.hide(this.question);
+		this.hide(this.response);
+		this.show(this.start);
 	}
 };
 
 const game = {
 	start(quiz) {
-		view.hide(view.start);
 		this.questions = [...quiz];
 		this.score = 0;
+		view.setup();
+		this.ask();
+	},
 
-		// main game loop
-		for (const question of this.questions) {
-			this.question = question;
-			this.ask();
+	ask(name) {
+		if (this.questions.length > 0) {
+			this.question = this.questions.pop();
+			const question = `What is ${this.question.english} in Spanish?`;
+			view.render(view.question, question);
+		} else {
+			this.gameOver();
 		}
-
-		// end of main game loop
-		this.gameOver();
 	},
 
-	ask() {
-		const question = `What is ${this.question.english} in Spanish?`;
-		view.render(view.question, question);
-		const response = prompt(question);
-		this.check(response);
-	},
-
-	check(response) {
-		const answer = this.question.spanish
+	check(event) {
+		event.preventDefault();
+		const response = view.response.answer.value;
+		const answer = this.question.spanish;
 		if (response === answer) {
 			view.render(view.result, "Correct!", {"class": "correct"});
-			alert("Correct!");
 			this.score++;
 			view.render(view.score, this.score);
 		} else {
 			view.render(view.result, `Wrong! The correct answer was ${answer}`, {"class": "wrong"});
-			alert(`Wrong! The correct answer was ${answer}`);
 		}
+		view.resetForm();
+		this.ask();
 	},
 	gameOver() {
-		view.show(view.start);
 		view.render(view.info, `Quiz Over, you scored ${this.score} point${this.score !== 1 ? 's' : ''}`);
+		view.teardown();
 	}
 }
 
 view.start.addEventListener("click", () => game.start(quiz), false);
+view.response.addEventListener('submit', (event) => game.check(event), false);
+view.hide(view.response);
+
+// TODO: WINDOW OBJECT
