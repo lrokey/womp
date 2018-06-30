@@ -48,8 +48,10 @@ const view = {
 
 const game = {
 	start(quiz) {
+		console.log("Start() invoked");
 		this.questions = [...quiz];
 		this.score = 0;
+		console.log("setting secondsRemaining to 0");
 		this.secondsRemaining = 20;
 		this.timer = setInterval(this.countdown, 1000);
 		view.setup();
@@ -57,6 +59,7 @@ const game = {
 	},
 
 	ask(name) {
+		console.log("ask() invoked");
 		if (this.questions.length > 0) {
 			this.question = this.questions.pop();
 			const question = `What is ${this.question.english} in Spanish?`;
@@ -67,6 +70,7 @@ const game = {
 	},
 
 	check(event) {
+		console.log("check(event) invoked");
 		event.preventDefault();
 		const response = view.response.answer.value;
 		const answer = this.question.spanish;
@@ -88,7 +92,9 @@ const game = {
 		}
 	},
 	gameOver() {
+		console.log("gameOver() invoked");
 		view.render(view.info, `Quiz Over, you scored ${this.score} point${this.score !== 1 ? 's' : ''}`);
+		this.secondsRemaining = 20;
 		clearInterval(this.timer);
 		view.teardown();
 		
@@ -99,4 +105,4 @@ view.start.addEventListener("click", () => game.start(quiz), false);
 view.response.addEventListener('submit', (event) => game.check(event), false);
 view.hide(view.response);
 
-// TODO: WINDOW OBJECT
+// TODO: 
