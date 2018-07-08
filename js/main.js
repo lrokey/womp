@@ -1,7 +1,10 @@
 const quiz = [
 	{english: "airport", spanish: "aeropuerto"},
 	{english: "interesting", spanish: "interesante"},
-	{english: "cat", spanish: "gato"}
+	{english: "cat", spanish: "gato"},
+	{english: "dog", spanish: "perro"},
+	{english: "red", spanish: "rojo"},
+	{english: "milk", spanish: "leche"}
 ];
 
 // helper functions
@@ -40,6 +43,9 @@ const view = {
 	show(element) {
 		element.style.display = "block";
 	},
+	buttons(array) {
+		return array.map(value => `<button>${value}</button>`).join(" ");
+	},
 	hide(element) {
 		element.style.display = "none";
 	},
@@ -51,11 +57,6 @@ const view = {
 		this.render(this.score, game.score);
 		this.render(this.result, "");
 		this.render(this.info, "");
-		this.resetForm();
-	},
-	resetForm(){
-		this.response.answer.value = "";
-		this.response.answer.focus();
 	},
 	teardown(){
 		this.hide(this.question);
@@ -78,11 +79,14 @@ const game = {
 
 	ask(name) {
 		console.log("ask() invoked");
-		if (this.questions.length > 0) {
+		if (this.questions.length > 2) {
 			shuffle(this.questions);
 			this.question = this.questions.pop();
+			const options = [this.questions[0].spanish, this.questions[1].spanish, this.question.spanish];
+			shuffle(options);
 			const question = `What is ${this.question.english} in Spanish?`;
 			view.render(view.question, question);
+			view.render(view.response, view.buttons(options));
 		} else {
 			this.gameOver();
 		}
@@ -90,8 +94,7 @@ const game = {
 
 	check(event) {
 		console.log("check(event) invoked");
-		event.preventDefault();
-		const response = view.response.answer.value;
+		const response = event.target.textContent;
 		const answer = this.question.spanish;
 		if (response === answer) {
 			view.render(view.result, "Correct!", {"class": "correct"});
@@ -100,7 +103,6 @@ const game = {
 		} else {
 			view.render(view.result, `Wrong! The correct answer was ${answer}`, {"class": "wrong"});
 		}
-		view.resetForm();
 		this.ask();
 	},
 	countdown() {
@@ -121,7 +123,6 @@ const game = {
 }
 
 view.start.addEventListener("click", () => game.start(quiz), false);
-view.response.addEventListener('submit', (event) => game.check(event), false);
-view.hide(view.response);
+view.response.addEventListener("click", (event) => game.check(event), false);
 
-// TODO: 
+// TODO: AJAX
